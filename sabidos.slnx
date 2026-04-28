@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="sabidos.Api/sabidos.Api.csproj" />
+  <Project Path="sabidos.Application/sabidos.Application.csproj" />
+  <Project Path="sabidos.Domain/sabidos.Domain.csproj" />
+  <Project Path="Sabidos.Infrastructure/sabidos.Infrastructure.csproj" />
+</Solution>
