@@ -10,17 +10,17 @@ namespace sabidos.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class FlashcardController : ControllerBase
+public class FlashcardCollectionController : ControllerBase
 {
-    private readonly FlashcardService _flashcardService;
+    private readonly FlashcardCollectionService _collectionService;
 
-    public FlashcardController(FlashcardService flashcardService)
+    public FlashcardCollectionController(FlashcardCollectionService collectionService)
     {
-        _flashcardService = flashcardService;
+        _collectionService = collectionService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] FlashcardCreateRequest request)
+    public async Task<IActionResult> Create([FromBody] FlashcardCollectionCreateRequest request)
     {
         try
         {
@@ -29,24 +29,22 @@ public class FlashcardController : ControllerBase
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
-            var flashcard = new Flashcard
+            var collection = new FlashcardCollection
             {
-                CollectionId = request.CollectionId,
-                Front = request.Front,
-                Back = request.Back,
+                Name = request.Name,
+                Color = request.Color,
                 UserId = userId,
             };
 
-            await _flashcardService.CreateNewFlashcard(flashcard);
+            await _collectionService.CreateNewCollection(collection);
 
-            var response = new FlashcardResponse
+            var response = new FlashcardCollectionResponse
             {
-                Id = flashcard.Id,
-                CollectionId = flashcard.CollectionId,
-                Front = flashcard.Front,
-                Back = flashcard.Back,
-                UserId = flashcard.UserId,
-                CreatedAt = flashcard.CreatedAt
+                Id = collection.Id,
+                Name = collection.Name,
+                Color = collection.Color,
+                UserId = collection.UserId,
+                CreatedAt = collection.CreatedAt
             };
 
             return CreatedAtAction(nameof(Create), new { id = response.Id }, response);
@@ -57,21 +55,25 @@ public class FlashcardController : ControllerBase
         }
     }
     
-    [HttpGet("collection/{collectionId}")]
-    public async Task<IActionResult> GetByCollection(string collectionId)
+    [HttpGet]
+    public async Task<IActionResult> GetMyCollections()
     {
         try
         {
-            var flashcards = await _flashcardService.GetFlashcardsByCollectionId(collectionId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+                
+            var collections = await _collectionService.GetCollectionsByUserId(userId);
             
-            var response = flashcards.Select(f => new FlashcardResponse
+            var response = collections.Select(c => new FlashcardCollectionResponse
             {
-                Id = f.Id,
-                CollectionId = f.CollectionId,
-                Front = f.Front,
-                Back = f.Back,
-                UserId = f.UserId,
-                CreatedAt = f.CreatedAt
+                Id = c.Id,
+                Name = c.Name,
+                Color = c.Color,
+                UserId = c.UserId,
+                CreatedAt = c.CreatedAt
             });
             
             return Ok(response);
@@ -91,7 +93,7 @@ public class FlashcardController : ControllerBase
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
-            await _flashcardService.DeleteFlashcard(id);
+            await _collectionService.DeleteCollection(id);
             return NoContent();
         }
         catch (Exception ex)

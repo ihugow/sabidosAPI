@@ -1,21 +1,18 @@
-﻿using Google.Cloud.Firestore;
+using Google.Cloud.Firestore;
 
 namespace sabidos.Domain.Entities
 {
     [FirestoreData]
-    public class Flashcard
+    public class FlashcardCollection
     {
         [FirestoreDocumentId]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [FirestoreProperty]
-        public string CollectionId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         [FirestoreProperty]
-        public string Front { get; set; } = string.Empty;
-
-        [FirestoreProperty]
-        public string Back { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
 
         [FirestoreProperty]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

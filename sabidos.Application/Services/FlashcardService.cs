@@ -1,4 +1,4 @@
-﻿using sabidos.Domain.Entities;
+using sabidos.Domain.Entities;
 using sabidos.Domain.Interfaces;
 
 namespace sabidos.Application.Services;
@@ -14,9 +14,17 @@ public class FlashcardService
 
     public async Task CreateNewFlashcard(Flashcard flashcard)
     {
-        // Aqui você poderia validar se o usuário atingiu o limite diário,
-        // ou adicionar lógica de experiência (XP)
         flashcard.CreatedAt = DateTime.UtcNow;
         await _repository.AddAsync(flashcard);
+    }
+    
+    public async Task<IEnumerable<Flashcard>> GetFlashcardsByCollectionId(string collectionId)
+    {
+        return await _repository.GetByCollectionIdAsync(collectionId);
+    }
+
+    public async Task DeleteFlashcard(string id)
+    {
+        await _repository.DeleteAsync(id);
     }
 }

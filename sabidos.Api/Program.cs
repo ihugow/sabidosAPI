@@ -1,35 +1,26 @@
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
 using sabidos.Domain.Interfaces;
 using sabidos.Infrastructure.Repositories;
 using sabidos.Application.Services;
-using Supabase;
+using Google.Cloud.Firestore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurando a autenticaÃ§Ã£o JWT
-var jwtSecret = builder.Configuration["Supabase:JwtSecret"];
-var key = Encoding.UTF8.GetBytes(jwtSecret!); // Supabase usa UTF8 para o secret
+// Configurando a autenticação JWT com o Firebase
+var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
 
-builder.Services.AddAuthentication(x =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
 {
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
+    options.Authority = $"https://securetoken.google.com/{firebaseProjectId}";
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false, // Supabase issuer varia, melhor manter false por enquanto
+        ValidateIssuer = true,
+        ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
         ValidateAudience = true,
-        ValidAudience = "authenticated", // Valor padrÃ£o do Supabase
+        ValidAudience = firebaseProjectId,
         ValidateLifetime = true
     };
 });
@@ -43,7 +34,6 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // Adiciona o campo de "Authorize" no Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -70,26 +60,27 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 1. Pegar as configuraÃ§Ãµes do appsettings.json
-var supabaseUrl = builder.Configuration["Supabase:Url"];
-var supabaseKey = builder.Configuration["Supabase:Key"];
+// Configurar credenciais automaticamente a partir do appsettings.json
+var credentialsPath = builder.Configuration["Firebase:CredentialsPath"];
+if (!string.IsNullOrEmpty(credentialsPath) && System.IO.File.Exists(credentialsPath))
+{
+    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialsPath);
+}
 
-// 2. Registrar o Cliente do Supabase (Singleton - um para a API toda)
-builder.Services.AddScoped(_ =>
-    new Supabase.Client(supabaseUrl!, supabaseKey!, new SupabaseOptions
-    {
-        AutoConnectRealtime = true
-    }));
+// Registrar o FirestoreDb
+// A biblioteca do Google puxará automaticamente as credenciais se a variável de ambiente GOOGLE_APPLICATION_CREDENTIALS estiver configurada.
+builder.Services.AddSingleton(provider => FirestoreDb.Create(firebaseProjectId));
 
-// 3. Registrar nossas camadas (InjeÃ§Ã£o de DependÃªncia)
-builder.Services.AddScoped<IFlashcardRepository, SupabaseFlashcardRepository>();
+// 3. Registrar nossas camadas (Injeção de Dependência)
+builder.Services.AddScoped<IFlashcardRepository, FirestoreFlashcardRepository>();
+builder.Services.AddScoped<IFlashcardCollectionRepository, FirestoreFlashcardCollectionRepository>();
 builder.Services.AddScoped<FlashcardService>();
+builder.Services.AddScoped<FlashcardCollectionService>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -100,8 +91,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Desativado para o Emulador Android (evitar Erro 307)
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+
+
