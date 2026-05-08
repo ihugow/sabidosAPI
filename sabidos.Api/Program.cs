@@ -8,7 +8,7 @@ using Google.Cloud.Firestore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurando a autenticação JWT com o Firebase
+// Configurando a autenticaï¿½ï¿½o JWT com o Firebase
 var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -68,14 +68,18 @@ if (!string.IsNullOrEmpty(credentialsPath) && System.IO.File.Exists(credentialsP
 }
 
 // Registrar o FirestoreDb
-// A biblioteca do Google puxará automaticamente as credenciais se a variável de ambiente GOOGLE_APPLICATION_CREDENTIALS estiver configurada.
+// A biblioteca do Google puxarï¿½ automaticamente as credenciais se a variï¿½vel de ambiente GOOGLE_APPLICATION_CREDENTIALS estiver configurada.
 builder.Services.AddSingleton(provider => FirestoreDb.Create(firebaseProjectId));
 
-// 3. Registrar nossas camadas (Injeção de Dependência)
+// 3. Registrar nossas camadas (Injeï¿½ï¿½o de Dependï¿½ncia)
 builder.Services.AddScoped<IFlashcardRepository, FirestoreFlashcardRepository>();
 builder.Services.AddScoped<IFlashcardCollectionRepository, FirestoreFlashcardCollectionRepository>();
 builder.Services.AddScoped<FlashcardService>();
 builder.Services.AddScoped<FlashcardCollectionService>();
+builder.Services.AddScoped<PointService>();
+builder.Services.AddScoped<AchievementService>();
+builder.Services.AddScoped<PointRepository>();
+builder.Services.AddScoped<FirebaseService>();
 
 builder.Services.AddControllers();
 
