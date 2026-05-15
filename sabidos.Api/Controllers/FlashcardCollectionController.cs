@@ -84,6 +84,36 @@ public class FlashcardCollectionController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var collections = await _collectionService.GetCollectionsByUserId(userId);
+            var collection = collections.FirstOrDefault(c => c.Id == id);
+
+            if (collection == null) return NotFound();
+
+            var response = new FlashcardCollectionResponse
+            {
+                Id = collection.Id,
+                Name = collection.Name,
+                Color = collection.Color,
+                UserId = collection.UserId,
+                CreatedAt = collection.CreatedAt
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
