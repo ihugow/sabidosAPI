@@ -1,3 +1,4 @@
+
 //using sabidos.Domain.Enums;
 
 public class PointService
@@ -34,4 +35,5 @@ public class PointService
     {
         return data.CyclesCompleted * 10;
     }
+
 }

@@ -71,13 +71,19 @@ if (!string.IsNullOrEmpty(credentialsPath) && System.IO.File.Exists(credentialsP
 // A biblioteca do Google puxar� automaticamente as credenciais se a vari�vel de ambiente GOOGLE_APPLICATION_CREDENTIALS estiver configurada.
 builder.Services.AddSingleton(provider => FirestoreDb.Create(firebaseProjectId));
 
-// 3. Registrar nossas camadas (Injeo de Dependncia)
+
 builder.Services.AddScoped<IFlashcardRepository, FirestoreFlashcardRepository>();
 builder.Services.AddScoped<IFlashcardCollectionRepository, FirestoreFlashcardCollectionRepository>();
 builder.Services.AddScoped<IAgendaRepository, FirestoreAgendaRepository>();
 
 builder.Services.AddScoped<FlashcardService>();
 builder.Services.AddScoped<FlashcardCollectionService>();
+
+builder.Services.AddScoped<PointService>();
+builder.Services.AddScoped<AchievementService>();
+builder.Services.AddScoped<PointRepository>();
+builder.Services.AddScoped<FirebaseService>();
+
 builder.Services.AddScoped<AgendaService>();
 
 builder.Services.AddControllers();

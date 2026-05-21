@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using sabidos.Application.DTOs;
@@ -88,4 +89,5 @@ public class PointsController : ControllerBase
             totalPoints = points
         });
     }
+
 }

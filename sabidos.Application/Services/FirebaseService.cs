@@ -1,3 +1,4 @@
+
 using Google.Cloud.Firestore;
 
 public class FirebaseService
@@ -19,4 +20,5 @@ public class FirebaseService
             updatedAt = Timestamp.GetCurrentTimestamp()
         }, SetOptions.MergeAll);
     }
+
 }
