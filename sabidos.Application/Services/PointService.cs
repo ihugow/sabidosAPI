@@ -1,14 +1,22 @@
+
+//using sabidos.Domain.Enums;
+
 public class PointService
 {
-    public int CalculatePoints(string action, object data)
+    public int CalculatePoints(
+        PointActionType action,
+        object data
+    )
     {
         return action switch
         {
-            "RESUMO" => 10,
+            PointActionType.ResumoCriado => 10,
 
-            "FLASHCARD" => CalculateFlashcardPoints((FlashcardData)data),
+            PointActionType.FlashcardRespondido =>
+                CalculateFlashcardPoints((FlashcardData)data),
 
-            "POMODORO" => CalculatePomodoroPoints((PomodoroData)data),
+            PointActionType.PomodoroCompleto =>
+                CalculatePomodoroPoints((PomodoroData)data),
 
             _ => 0
         };
@@ -16,19 +24,16 @@ public class PointService
 
     private int CalculateFlashcardPoints(FlashcardData data)
     {
-        int basePoints = data.Correct ? 5 : 2;
+       
+        return data.Score >= 80 ? 20 : 5;
 
-        return data.Difficulty switch
-        {
-            "FACIL" => basePoints,
-            "MEDIO" => basePoints * 2,
-            "DIFICIL" => basePoints * 3,
-            _ => basePoints
-        };
     }
 
-    private int CalculatePomodoroPoints(PomodoroData data)
+    private int CalculatePomodoroPoints(
+        PomodoroData data
+    )
     {
         return data.CyclesCompleted * 10;
     }
+
 }

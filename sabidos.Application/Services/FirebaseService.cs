@@ -1,3 +1,4 @@
+
 using Google.Cloud.Firestore;
 
 public class FirebaseService
@@ -11,7 +12,7 @@ public class FirebaseService
 
     public async Task UpdateUserPoints(string userId, int totalPoints)
     {
-        var doc = _firestore.Collection("users").Document(userId);
+        var doc = _firestore.Collection("usuarios").Document(userId);
 
         await doc.SetAsync(new
         {
@@ -19,4 +20,5 @@ public class FirebaseService
             updatedAt = Timestamp.GetCurrentTimestamp()
         }, SetOptions.MergeAll);
     }
+
 }

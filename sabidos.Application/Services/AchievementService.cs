@@ -19,7 +19,7 @@ public class AchievementService
         };
 
         var userAchievementsRef = _db
-            .Collection("users")
+            .Collection("usuarios")
             .Document(userId)
             .Collection("achievements");
 
@@ -39,4 +39,5 @@ public class AchievementService
             }
         }
     }
+
 }

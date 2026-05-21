@@ -1,15 +1,17 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using sabidos.Application.DTOs;
 using sabidos.Application.Services;
 using sabidos.Domain.Entities;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace sabidos.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("points")]
+[Route("api/[controller]")]
 public class PointsController : ControllerBase
 {
     private readonly PointService _pointService;
@@ -25,7 +27,6 @@ public class PointsController : ControllerBase
         _repo = repo;
         _achievement = achievement;
     }
-
     [HttpPost("earn")]
     public async Task<IActionResult> Earn([FromBody] EarnRequest request)
     {
@@ -34,9 +35,34 @@ public class PointsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        int points = _pointService.CalculatePoints(request.Action, request.Data);
+        object parsedData = null;
 
-        await _repo.AddTransaction(userId, points, request.Action.ToString());
+        switch (request.Action)
+        {
+            case PointActionType.FlashcardRespondido:
+                parsedData = request.Data.Deserialize<FlashcardData>();
+                break;
+
+            case PointActionType.PomodoroCompleto:
+                parsedData = request.Data.Deserialize<PomodoroData>();
+                break;
+
+            case PointActionType.ResumoCriado:
+                parsedData = null;
+                break;
+        }
+
+        int points = _pointService.CalculatePoints(
+            request.Action,
+            parsedData
+        );
+
+        await _repo.AddTransaction(
+            userId,
+            points,
+            request.Action.ToString()
+        );
+
         await _repo.UpdatePoints(userId, points);
 
         int total = await _repo.GetUserPoints(userId);
@@ -45,8 +71,23 @@ public class PointsController : ControllerBase
 
         return Ok(new
         {
-            earned = points,
-            total
+            earnedPoints = points,
+            totalPoints = total,
+            unlockedAchievements = new List<string>()
         });
     }
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyPoints()
+    {
+        var userId = User.FindFirst("user_id")?.Value;
+        if (userId == null)
+            return Unauthorized();
+        int points = await _repo.GetUserPoints(userId);
+        //await _achievement.CheckAchievements(userId, total);
+        return Ok(new
+        {
+            totalPoints = points
+        });
+    }
+
 }

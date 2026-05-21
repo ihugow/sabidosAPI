@@ -11,8 +11,10 @@ public class PointRepository
 
     private DocumentReference GetUserDoc(string userId)
     {
-        return _db.Collection("users").Document(userId);
-    }
+
+        return _db.Collection("usuarios").Document(userId);
+
+  }
 
     public async Task<int> GetUserPoints(string userId)
     {
@@ -57,3 +59,4 @@ public class PointRepository
         });
     }
 }
+
