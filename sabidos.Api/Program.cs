@@ -5,6 +5,7 @@ using sabidos.Domain.Interfaces;
 using sabidos.Infrastructure.Repositories;
 using sabidos.Application.Services;
 using Google.Cloud.Firestore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,8 +87,13 @@ builder.Services.AddScoped<FirebaseService>();
 
 builder.Services.AddScoped<AgendaService>();
 
-builder.Services.AddControllers();
-
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
+    });
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
