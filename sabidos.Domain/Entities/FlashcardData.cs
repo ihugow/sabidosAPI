@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 public class FlashcardData
 {
-    public bool Correct { get; set; }
-    public string Difficulty { get; set; }
+    [JsonPropertyName("score")]
+    public int Score { get; set; }
+    
 }
