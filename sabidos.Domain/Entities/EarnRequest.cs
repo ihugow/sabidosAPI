@@ -1,18 +1,20 @@
-// using System;
-// public enum PointActionType
-// {
-//     // Resumo
-//     ResumoCriado,
+using System;
+using System.Text.Json;
+public enum PointActionType
+{
+    // Resumo
+    ResumoCriado,
 
-//     // Flashcard
-//     FlashcardRespondido,
+    // Flashcard
+    FlashcardRespondido,
 
-//     // Pomodoro
-//     PomodoroCompleto
-// }
+    // Pomodoro
+    PomodoroCompleto
+}
+
 public class EarnRequest
 {
-    // public PointActionType Action { get; set; }
-    public string Action { get; set; }
-    public object Data { get; set; }
+    public PointActionType Action { get; set; }
+
+    public JsonElement Data { get; set; }
 }
