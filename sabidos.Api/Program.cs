@@ -82,8 +82,11 @@ builder.Services.AddScoped<FlashcardCollectionService>();
 
 builder.Services.AddScoped<PointService>();
 builder.Services.AddScoped<AchievementService>();
-builder.Services.AddScoped<PointRepository>();
+builder.Services.AddScoped<PointRepository>(); 
+builder.Services.AddScoped<AchievementRepository>();
 builder.Services.AddScoped<FirebaseService>();
+builder.Services.AddScoped<GamificationService>();
+builder.Services.AddScoped<LevelService>();
 
 builder.Services.AddScoped<AgendaService>();
 
