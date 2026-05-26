@@ -67,7 +67,7 @@ public class PointsController : ControllerBase
 
         int total = await _repo.GetUserPoints(userId);
 
-        await _achievement.CheckAchievements(userId, total);
+        await _achievement.CheckAchievements(userId);
 
         return Ok(new
         {

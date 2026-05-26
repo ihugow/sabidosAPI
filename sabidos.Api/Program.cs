@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using sabidos.Domain.Interfaces;
 using sabidos.Infrastructure.Repositories;
 using sabidos.Application.Services;
+using sabidos.Application.Interfaces;
 using Google.Cloud.Firestore;
 using System.Text.Json.Serialization;
 
@@ -83,7 +84,7 @@ builder.Services.AddScoped<FlashcardCollectionService>();
 builder.Services.AddScoped<PointService>();
 builder.Services.AddScoped<AchievementService>();
 builder.Services.AddScoped<PointRepository>(); 
-builder.Services.AddScoped<AchievementRepository>();
+builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
 builder.Services.AddScoped<FirebaseService>();
 builder.Services.AddScoped<GamificationService>();
 builder.Services.AddScoped<LevelService>();

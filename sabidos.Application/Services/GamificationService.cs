@@ -1,16 +1,16 @@
 using sabidos.Application.DTOs;
-using sabidos.Infrastructure.Repositories;
+using sabidos.Application.Interfaces;
 
 namespace sabidos.Application.Services;
 
 public class GamificationService
 {
-    private readonly AchievementRepository _repo;
+    private readonly IAchievementRepository _repo;
 
     private readonly LevelService _levelService;
 
     public GamificationService(
-        AchievementRepository repo,
+        IAchievementRepository repo,
         LevelService levelService)
     {
         _repo = repo;

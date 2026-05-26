@@ -1,14 +1,14 @@
 using sabidos.Application.DTOs;
-using sabidos.Infrastructure.Repositories;
+using sabidos.Application.Interfaces;
 
 namespace sabidos.Application.Services;
 
 public class AchievementService
 {
-    private readonly AchievementRepository _repo;
+    private readonly IAchievementRepository _repo;
 
     public AchievementService(
-        AchievementRepository repo)
+        IAchievementRepository repo)
     {
         _repo = repo;
     }

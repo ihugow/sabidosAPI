@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using sabidos.Application.Interfaces;
+using sabidos.Application.Services;
 
 namespace sabidos.Api.Controllers
 {
@@ -9,7 +11,7 @@ namespace sabidos.Api.Controllers
     public class AchievementController : Controller
     {
         private readonly PointService _pointService;
-        private readonly AchievementRepository _repo;
+        private readonly IAchievementRepository _repo;
         private readonly AchievementService _achievement;
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()

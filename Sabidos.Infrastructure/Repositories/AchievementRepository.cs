@@ -1,9 +1,10 @@
 using Google.Cloud.Firestore;
 using sabidos.Application.DTOs;
+using sabidos.Application.Interfaces;
 
 namespace sabidos.Infrastructure.Repositories;
 
-public class AchievementRepository
+public class AchievementRepository : IAchievementRepository
 {
     private readonly FirestoreDb _db;
 
