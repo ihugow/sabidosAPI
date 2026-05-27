@@ -77,13 +77,15 @@ builder.Services.AddSingleton(provider => FirestoreDb.Create(firebaseProjectId))
 builder.Services.AddScoped<IFlashcardRepository, FirestoreFlashcardRepository>();
 builder.Services.AddScoped<IFlashcardCollectionRepository, FirestoreFlashcardCollectionRepository>();
 builder.Services.AddScoped<IAgendaRepository, FirestoreAgendaRepository>();
+builder.Services.AddScoped<IMissionsRepository, FirestoreMissionsRepository>();
 
 builder.Services.AddScoped<FlashcardService>();
 builder.Services.AddScoped<FlashcardCollectionService>();
 
 builder.Services.AddScoped<PointService>();
 builder.Services.AddScoped<AchievementService>();
-builder.Services.AddScoped<PointRepository>(); 
+builder.Services.AddScoped<DailyMissionService>();
+builder.Services.AddScoped<IPointRepository, PointRepository>(); 
 builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
 builder.Services.AddScoped<FirebaseService>();
 builder.Services.AddScoped<GamificationService>();

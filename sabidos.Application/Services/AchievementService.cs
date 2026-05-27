@@ -1,16 +1,20 @@
 using sabidos.Application.DTOs;
 using sabidos.Application.Interfaces;
+using sabidos.Domain.Interfaces;
 
 namespace sabidos.Application.Services;
 
 public class AchievementService
 {
     private readonly IAchievementRepository _repo;
+    private readonly IPointRepository _pointRepo;
 
     public AchievementService(
-        IAchievementRepository repo)
+        IAchievementRepository repo,
+        IPointRepository pointRepo)
     {
         _repo = repo;
+        _pointRepo = pointRepo;
     }
 
     public async Task CheckAchievements(
@@ -31,9 +35,36 @@ public class AchievementService
             userId,
             stats);
 
+        await CheckAgendaAchievements(
+            userId,
+            stats);
+
         await CheckVeteranoAchievements(
             userId,
             stats);
+    }
+
+    private async Task CheckAgendaAchievements(
+        string userId,
+        UserStatsResponse stats)
+    {
+        if (stats.EventosCriados >= 10)
+        {
+            await UnlockAchievement(
+                userId,
+                new UserAchievementDto
+                {
+                    Id = "organizado",
+                    Title = "Organizado",
+                    Description =
+                        "Cadastre 10 eventos na agenda.",
+                    Goal = 10,
+                    Progress =
+                        stats.EventosCriados,
+                    Unlocked = true,
+                    XpReward = 150
+                });
+        }
     }
 
     private async Task CheckResumoAchievements(
@@ -53,7 +84,8 @@ public class AchievementService
                     Goal = 1,
                     Progress =
                         stats.ResumosCriados,
-                    Unlocked = true
+                    Unlocked = true,
+                    XpReward = 50
                 });
         }
     }
@@ -75,7 +107,8 @@ public class AchievementService
                     Goal = 20,
                     Progress =
                         stats.FlashcardsCriados,
-                    Unlocked = true
+                    Unlocked = true,
+                    XpReward = 200
                 });
         }
     }
@@ -97,7 +130,8 @@ public class AchievementService
                     Goal = 5,
                     Progress =
                         stats.PomodorosConcluidos,
-                    Unlocked = true
+                    Unlocked = true,
+                    XpReward = 100
                 });
         }
     }
@@ -119,9 +153,16 @@ public class AchievementService
                     Goal = 100,
                     Progress =
                         stats.TotalAcoes,
-                    Unlocked = true
+                    Unlocked = true,
+                    XpReward = 500
                 });
         }
+    }
+
+    public async Task<List<string>> GetUserAchievementsIds(string userId)
+    {
+        var achievements = await _repo.GetUserAchievements(userId);
+        return achievements.Select(a => a.Id).ToList();
     }
 
     private async Task UnlockAchievement(
@@ -136,8 +177,21 @@ public class AchievementService
         if (exists)
             return;
 
+        // 1. Salva a conquista como desbloqueada
         await _repo.UnlockAchievement(
             userId,
             achievement);
+
+        // 2. RECOMPENSA O USUÁRIO COM XP
+        if (achievement.XpReward > 0)
+        {
+            await _pointRepo.UpdatePoints(userId, achievement.XpReward);
+
+            await _pointRepo.AddTransaction(
+                userId, 
+                achievement.XpReward, 
+                $"Conquista: {achievement.Title}"
+            );
+        }
     }
 }

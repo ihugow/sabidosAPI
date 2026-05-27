@@ -23,13 +23,11 @@ public class GamificationService
         var stats =
             await _repo.GetUserStats(userId);
 
-        int level =
-            _levelService.CalculateLevel(
-                stats.TotalXp);
-
         var achievements =
             await _repo.GetUserAchievements(
                 userId);
+
+        int level = _levelService.CalculateLevel(stats.TotalXp);
 
         return new UserGamificationProfile
         {
@@ -39,7 +37,11 @@ public class GamificationService
 
             TotalXp = stats.TotalXp,
 
-            Level = level
+            Level = level,
+
+            XpCurrentLevelBase = _levelService.GetCurrentLevelBaseXp(level),
+
+            XpNextLevelThreshold = _levelService.GetNextLevelXpThreshold(level)
         };
     }
-}
+    }

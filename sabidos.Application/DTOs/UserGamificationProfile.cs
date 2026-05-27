@@ -9,4 +9,8 @@ public class UserGamificationProfile
     public int TotalXp { get; set; }
 
     public int Level { get; set; }
+
+    public int XpCurrentLevelBase { get; set; }
+
+    public int XpNextLevelThreshold { get; set; }
 }

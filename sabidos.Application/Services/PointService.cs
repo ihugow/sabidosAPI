@@ -18,6 +18,8 @@ public class PointService
             PointActionType.PomodoroCompleto =>
                 CalculatePomodoroPoints((PomodoroData)data),
 
+            PointActionType.EventoCriado => 5,
+
             _ => 0
         };
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using sabidos.Application.DTOs;
 using sabidos.Application.Services;
 using sabidos.Domain.Entities;
+using sabidos.Domain.Interfaces;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -15,12 +16,12 @@ namespace sabidos.Api.Controllers;
 public class PointsController : ControllerBase
 {
     private readonly PointService _pointService;
-    private readonly PointRepository _repo;
+    private readonly IPointRepository _repo;
     private readonly AchievementService _achievement;
 
     public PointsController(
         PointService pointService,
-        PointRepository repo,
+        IPointRepository repo,
         AchievementService achievement)
     {
         _pointService = pointService;
@@ -67,13 +68,17 @@ public class PointsController : ControllerBase
 
         int total = await _repo.GetUserPoints(userId);
 
+        var unlockedBefore = await _achievement.GetUserAchievementsIds(userId);
         await _achievement.CheckAchievements(userId);
+        var unlockedAfter = await _achievement.GetUserAchievementsIds(userId);
+
+        var newlyUnlocked = unlockedAfter.Except(unlockedBefore).ToList();
 
         return Ok(new
         {
             earnedPoints = points,
             totalPoints = total,
-            unlockedAchievements = new List<string>()
+            unlockedAchievements = newlyUnlocked
         });
     }
     [HttpGet("me")]
