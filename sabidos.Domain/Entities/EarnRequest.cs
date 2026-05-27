@@ -9,7 +9,10 @@ public enum PointActionType
     FlashcardRespondido,
 
     // Pomodoro
-    PomodoroCompleto
+    PomodoroCompleto,
+
+    // Agenda
+    EventoCriado
 }
 
 public class EarnRequest

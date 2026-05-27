@@ -37,8 +37,8 @@ public class AchievementRepository : IAchievementRepository
                 .GetSnapshotAsync();
 
         var eventos =
-            await _db.Collection("eventos")
-                .WhereEqualTo("userId", userId)
+            await _db.Collection("AgendaEvents")
+                .WhereEqualTo("UserId", userId)
                 .GetSnapshotAsync();
 
         var userDoc =
