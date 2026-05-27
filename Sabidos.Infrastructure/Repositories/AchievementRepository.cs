@@ -22,38 +22,38 @@ public class AchievementRepository : IAchievementRepository
         GetUserStats(string userId)
     {
         var flashcards =
-            await GetUserDoc(userId)
-                .Collection("flashcards")
+            await _db.Collection("Flashcards")
+                .WhereEqualTo("UserId", userId)
                 .GetSnapshotAsync();
 
         var resumos =
-            await GetUserDoc(userId)
-                .Collection("resumos")
+            await _db.Collection("resumos")
+                .WhereEqualTo("userId", userId)
                 .GetSnapshotAsync();
 
         var pomodoros =
-            await GetUserDoc(userId)
-                .Collection("pomodoros")
+            await _db.Collection("pomodoros")
+                .WhereEqualTo("userId", userId)
                 .GetSnapshotAsync();
 
         var eventos =
-            await GetUserDoc(userId)
-                .Collection("eventos")
+            await _db.Collection("eventos")
+                .WhereEqualTo("userId", userId)
                 .GetSnapshotAsync();
 
         var userDoc =
             await GetUserDoc(userId)
                 .GetSnapshotAsync();
 
-        var data = userDoc.ToDictionary();
+        var data = userDoc.Exists ? userDoc.ToDictionary() : new Dictionary<string, object>();
 
         int totalXp =
-            data.ContainsKey("totalXp")
+            data != null && data.ContainsKey("totalXp")
                 ? Convert.ToInt32(data["totalXp"])
                 : 0;
 
         int streak =
-            data.ContainsKey("diasSequencia")
+            data != null && data.ContainsKey("diasSequencia")
                 ? Convert.ToInt32(data["diasSequencia"])
                 : 0;
 
